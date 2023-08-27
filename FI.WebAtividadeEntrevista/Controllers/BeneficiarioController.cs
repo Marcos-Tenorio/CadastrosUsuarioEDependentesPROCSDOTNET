@@ -24,7 +24,6 @@ namespace WebAtividadeEntrevista.Controllers
             return View();
         }
 
-
         public ActionResult BeneficiarioModel()
         {
             List<BeneficiarioModel> beneficiarioModelList = new List<BeneficiarioModel>();

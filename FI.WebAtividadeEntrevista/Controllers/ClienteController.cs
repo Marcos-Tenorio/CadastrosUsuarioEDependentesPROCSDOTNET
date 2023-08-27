@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using FI.AtividadeEntrevista.DML;
 using WebAtividadeEntrevista.Controllers.Services;
+using System.Web.Http.Results;
 
 namespace WebAtividadeEntrevista.Controllers
 {
@@ -27,7 +28,6 @@ namespace WebAtividadeEntrevista.Controllers
         [HttpPost]
         public JsonResult Incluir(ClienteModel model)
         {
-
             Cliente cli = new Cliente();
 
             BoCliente bo = new BoCliente();
@@ -159,6 +159,23 @@ namespace WebAtividadeEntrevista.Controllers
             {
                 return Json(new { Result = "ERROR", Message = ex});
             }
+        }
+
+        public ActionResult AdicionarBeneficiario(string cpf, string nome)
+        {
+            List<BeneficiarioCliente> listaBenef = (List<BeneficiarioCliente>)TempData["listaBenef"];
+
+            var novoBeneficiario = new BeneficiarioCliente
+            {
+                CPF = cpf,
+                Nome = nome
+            };
+
+            listaBenef.Add(novoBeneficiario);
+
+            TempData["listaBenef"] = listaBenef;
+
+            return Json(new { success = true, cpf = cpf, nome = nome });
         }
     }
 }
