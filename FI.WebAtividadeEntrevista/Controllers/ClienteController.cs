@@ -19,22 +19,9 @@ namespace WebAtividadeEntrevista.Controllers
             return View();
         }
 
-
         public ActionResult Incluir()
         {
             return View();
-        }
-
-        [HttpGet]
-        public ActionResult ResultadoValidacaoCPF(ClienteModel model) 
-        {
-            string cpfCliente = model.CPF;
-            if (_servicesCliente.validaCpf(cpfCliente))
-            {
-                return View();
-            }
-
-            return Json("CPF invalido do action ajax");
         }
 
         [HttpPost]
@@ -42,36 +29,12 @@ namespace WebAtividadeEntrevista.Controllers
         {
 
             Cliente cli = new Cliente();
-            
-/*
-            BeneficiarioCliente beneficiario = new BeneficiarioCliente();
-
-            beneficiario.CPF = "";
-            beneficiario.Nome = "";
-
-            cli.Beneficiarios.Add(beneficiario);
-
-            List<BeneficiarioCliente> listaVindaDaTela = new List<BeneficiarioCliente>();
-            BoBeneficiario boBenef = new BoBeneficiario();
-
-
-
-            foreach (var benef in listaVindaDaTela)
-            {
-                benef.Id
-                boBenef.Incluir(benef);
-            }
-
-*/
-
-
 
             BoCliente bo = new BoCliente();
             string cpfCliente = model.CPF;
 
             if (!this.ModelState.IsValid)
             {
-
                 List<string> erros = (from item in ModelState.Values
                                       from error in item.Errors
                                       select error.ErrorMessage).ToList();
@@ -79,11 +42,8 @@ namespace WebAtividadeEntrevista.Controllers
                 Response.StatusCode = 400;
                 return Json(string.Join(Environment.NewLine, erros));
             }
-            else if (_servicesCliente.validaCpf(cpfCliente))
+            else if (_servicesCliente.ValidaCpf(cpfCliente))
             {
-
-                
-
                 model.Id = bo.Incluir(new Cliente()
                 {
                     CEP = model.CEP,
@@ -98,16 +58,16 @@ namespace WebAtividadeEntrevista.Controllers
                     CPF = model.CPF
                 });
                 return Json("Cadastro efetuado com sucesso");
-
             }
-            else { return Json("CPF invalido do model"); };
+            else { return Json("CPF invalido"); };
         }
 
         [HttpPost]
         public JsonResult Alterar(ClienteModel model)
         {
+            string cpfCliente = model.CPF;
             BoCliente bo = new BoCliente();
-       
+
             if (!this.ModelState.IsValid)
             {
                 List<string> erros = (from item in ModelState.Values
@@ -117,7 +77,7 @@ namespace WebAtividadeEntrevista.Controllers
                 Response.StatusCode = 400;
                 return Json(string.Join(Environment.NewLine, erros));
             }
-            else
+            else if (_servicesCliente.ValidaCpf(cpfCliente))
             {
                 bo.Alterar(new Cliente()
                 {
@@ -133,11 +93,14 @@ namespace WebAtividadeEntrevista.Controllers
                     Telefone = model.Telefone,
                     CPF = model.CPF
                 });
-                               
+
                 return Json("Cadastro alterado com sucesso");
             }
+            else
+            {
+                return Json("CPF invalido");
+            }
         }
-
         [HttpGet]
         public ActionResult Alterar(long id)
         {

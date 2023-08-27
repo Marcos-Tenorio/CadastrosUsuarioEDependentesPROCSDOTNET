@@ -8,8 +8,7 @@ namespace WebAtividadeEntrevista.Controllers.Services
 {
     public class ServicesCliente
     {
-
-        public bool validaCpf(string CPF)
+        public bool ValidaCpf(string CPF)
         {
             int[] verificadorI = new int[9] { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
             int[] verificadorF = new int[10] { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
@@ -19,12 +18,11 @@ namespace WebAtividadeEntrevista.Controllers.Services
             int soma;
             int resto;
 
-
-
             cpf = new string(cpf.Where(char.IsDigit).ToArray());
             if (cpf.All(digit => digit == cpf[0]))
                 return false;
 
+            auxCPF = cpf.Substring(0, 9);
             soma = 0;
 
             for (int i = 0; i < 9; i++)
@@ -44,7 +42,7 @@ namespace WebAtividadeEntrevista.Controllers.Services
             }
 
             digito = resto.ToString();
-            auxCPF = cpf + digito;
+            auxCPF = auxCPF + digito;
 
             soma = 0;
 
@@ -72,7 +70,5 @@ namespace WebAtividadeEntrevista.Controllers.Services
             }
             else { return false; }
         }
-
-
     }
 }
