@@ -230,6 +230,11 @@ namespace WebAtividadeEntrevista.Controllers
             }
 
         }
+        /// <summary>
+        /// Consome cpf da lista no front
+        /// </summary>
+        /// <param name="cpf"></param>
+        /// <returns>excluir dados do cpf no front TempData</returns>
         public ActionResult ExcluirBeneficiario(string cpf)
         {
             List<BeneficiarioCliente> listaBenef = (List<BeneficiarioCliente>)TempData["listaBenef"];
