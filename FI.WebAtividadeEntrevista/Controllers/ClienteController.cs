@@ -248,7 +248,7 @@ namespace WebAtividadeEntrevista.Controllers
 
             var excluirBeneficiario = listaBenef.FirstOrDefault(b => b.CPF == cpf);
 
-            if (excluirBeneficiario != null)
+            if (excluirBeneficiario != null && listaBenef.Count() > 0)
             {
                 listaBenef.Remove(excluirBeneficiario);
                 TempData["listaBenef"] = listaBenef;
@@ -297,7 +297,9 @@ namespace WebAtividadeEntrevista.Controllers
         {
 
             List<BeneficiarioCliente> listaBenef = (List<BeneficiarioCliente>)TempData["listaBenef"];
-         
+
+
+          
             if (listaBenef.FirstOrDefault(b => b.CPF == cpf) == null)
             {
                 return Json(false, JsonRequestBehavior.AllowGet);
@@ -307,7 +309,7 @@ namespace WebAtividadeEntrevista.Controllers
                 return Json(true, JsonRequestBehavior.AllowGet);
             }
         }
-
+    
       
 
 

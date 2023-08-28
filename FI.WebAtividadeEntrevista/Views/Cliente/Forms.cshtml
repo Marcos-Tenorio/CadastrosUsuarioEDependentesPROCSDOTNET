@@ -190,8 +190,7 @@
 
 <script>
 
-    //TODO: Deixar no click do botao incluir
-
+   
 
      $(document).ready(function () {
          $("#CPF").on("blur", function () {
@@ -239,21 +238,8 @@
         $("#incluirBenef").click(function () {
             var cpf = $("#CPFBenef").val();
             var nome = $("#NomeBenef").val();
-            if (cpf === null || cpf.trim() === "") {
-                $("#cpfBenefValidationMessage").text("Preencha o campo CPF");
-                return;
-            }
-            TempData["listaBenef"]
-             $.ajax({
-                url: "@Url.Action("ValidaCPFBenefExistTempData", "Cliente")",
-                type: "GET",
-                data: { cpf: cpf },
-                success: function (isValid) {
-                    if (isValid) {
-                        return $("#cpfBenefValidationMessage").text("CPF já cadastrado como seu beneficiário");
-
-                    }
-
+      
+        
                         $.ajax({
                 url: "@Url.Action("AdicionarBeneficiario", "Cliente")",
                 type: "POST",
@@ -278,11 +264,11 @@
 
 
 
-                }
+                
             });
 
 
-        });
+       
 
      $(document).ready(function () {
          $("#CPF").on("blur",function () {
