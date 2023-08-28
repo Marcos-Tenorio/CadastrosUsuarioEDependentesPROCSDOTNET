@@ -13,11 +13,12 @@ namespace WebAtividadeEntrevista.Models
     public class ClienteModel
     {
         public long Id { get; set; }
-        
+
         /// <summary>
         /// CEP
         /// </summary>
         [Required]
+        [RegularExpression(@"^\d{5}-\d{3}$", ErrorMessage = "Digite um CEP válido")]
         public string CEP { get; set; }
 
         /// <summary>

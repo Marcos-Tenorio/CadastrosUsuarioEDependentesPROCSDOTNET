@@ -81,11 +81,42 @@ $(document).on("click", "#excBenef", function () {
         type: "POST",
         data: {
             "CPF": $(this).find("#CPFBenef").val(),
-            "Nome": $(this).find("#NomeBenef").val(),},
+            "Nome": $(this).find("#NomeBenef").val(),
+        },
         success: function (data) {
             if (data.success) {
                 row.remove();
 
             }
         }
-    });
+
+    }
+});
+
+
+
+function formatCEP(input) {
+    var value = input.value.replace(/\D/g, '');
+    var formattedValue = value.padStart(8, '0');
+    var formattedCEP = formattedValue.replace(/(\d{5})(\d{3})/, "$1-$2");
+    if (formattedCEP === "00000-000") {
+        alert("Por favor, insira um CEP valido");
+
+    }
+    else {
+        input.value = formattedCEP;
+    }
+}
+
+function formatTel(input) {
+    var valorCampo = input.value;
+    if (valorCampo.length === 10) {
+        input.value = valorCampo.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
+    }
+    else if (valorCampo.length === 11) {
+        input.value = valorCampo.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+    }
+    else {
+        alert("Telefone inválido. Insira um telefone válido.");
+    }
+}

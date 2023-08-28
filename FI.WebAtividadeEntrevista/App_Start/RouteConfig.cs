@@ -18,6 +18,12 @@ namespace WebAtividadeEntrevista
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
+
+           routes.MapRoute(
+           name: "ValidaCPFRoute",
+           url: "Cliente/ValidaCPFF",
+           defaults: new { controller = "Cliente", action = "ValidaCPFF" } 
+       );
         }
     }
 }

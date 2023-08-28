@@ -18,20 +18,20 @@ $(document).ready(function () {
                 "CPF": $(this).find("#CPF").val()
             },
             error:
-            function (r) {
-                if (r.status == 400)
-                    ModalDialog("Ocorreu um erro", r.responseJSON);
-                else if (r.status == 500)
-                    ModalDialog("Ocorreu um erro", "Ocorreu um erro interno no servidor.");
-            },
+                function (r) {
+                    if (r.status == 400)
+                        ModalDialog("Ocorreu um erro", r.responseJSON);
+                    else if (r.status == 500)
+                        ModalDialog("Ocorreu um erro", "Ocorreu um erro interno no servidor.");
+                },
             success:
-            function (r) {
-                ModalDialog("Sucesso!", r)
-                $("#formCadastro")[0].reset();
-            }
+                function (r) {
+                    ModalDialog("Sucesso!", r)
+                    $("#formCadastro")[0].reset();
+                }
         });
     })
-    
+
 })
 
 function ModalDialog(titulo, texto) {
@@ -59,23 +59,52 @@ function ModalDialog(titulo, texto) {
 }
 
 
-   
-$(document).ready(function () {
-    $("#Incluir").click(function () {
-        var dados = $("#NomeBenef").val();
-        var dados = $("#CPFBenef").val();
-        0
-        // Enviar o dado para o controller usando AJAX
-        $.ajax({
-            type: "POST",
-            url: "/BeneficiarioController/ArmazenarBeneficiario",
-            data: { dados: dados },
-            success: function () {
-                alert("Dados armazenados com sucesso!");
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        });
-    });
-});
+
+
+
+
+function formatCPF(input) {
+
+    var value = input.value.replace(/\D/g, '');
+    var formattedValue = value.padStart(11, '0');
+    var formattedCPF = formattedValue.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    if (formattedCPF === "000.000.000-00") {
+        alert("Por favor, insira o CPF valido");
+    }
+    else {
+        input.value = formattedCPF;
+    }
+}
+
+function formatCEP(input) {
+    var value = input.value.replace(/\D/g, '');
+    var formattedValue = value.padStart(8, '0');
+    var formattedCEP = formattedValue.replace(/(\d{5})(\d{3})/, "$1-$2");
+    if (formattedCEP === "00000-000") {
+        alert("Por favor, insira um CEP valido");
+        
+    }
+    else {
+        input.value = formattedCEP;
+    }
+}
+
+function formatTel(input) {
+    var valorCampo = input.value;
+    if (valorCampo.length === 10) {
+        input.value = valorCampo.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
+    }
+    else if (valorCampo.length === 11) {
+        input.value = valorCampo.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+    }
+    else {
+        alert("Telefone inválido. Insira um telefone válido.");      
+    }
+}
+
+
+
+
+
+
+      

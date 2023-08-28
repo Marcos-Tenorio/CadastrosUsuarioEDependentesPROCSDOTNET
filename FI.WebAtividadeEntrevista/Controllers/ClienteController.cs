@@ -178,7 +178,7 @@ namespace WebAtividadeEntrevista.Controllers
         }
 
 
-
+        
         [HttpPost]
         public JsonResult ClienteList(int jtStartIndex = 0, int jtPageSize = 0, string jtSorting = null)
         {
@@ -206,9 +206,16 @@ namespace WebAtividadeEntrevista.Controllers
             }
         }
 
+        /// <summary>
+        /// Metodo que adiciona novo usuario a lista de beneficiarios do front
+        /// </summary>
+        /// <param name="cpf"></param>
+        /// <param name="nome"></param>
+        /// <returns>cpf e nome do novo usuario</returns>
         public ActionResult AdicionarBeneficiario(string cpf, string nome)
         {
-            List<BeneficiarioCliente> listaBenef = (List<BeneficiarioCliente>)TempData["listaBenef"];
+
+            List<BeneficiarioCliente> listaBenef = new List<BeneficiarioCliente>();
 
             try
             {
@@ -231,10 +238,10 @@ namespace WebAtividadeEntrevista.Controllers
 
         }
         /// <summary>
-        /// Consome cpf da lista no front
+        /// Metodo que exclui da lista de beneficiarios
         /// </summary>
         /// <param name="cpf"></param>
-        /// <returns>excluir dados do cpf no front TempData</returns>
+        /// <returns>acao de exclusao</returns>
         public ActionResult ExcluirBeneficiario(string cpf)
         {
             List<BeneficiarioCliente> listaBenef = (List<BeneficiarioCliente>)TempData["listaBenef"];
@@ -250,5 +257,59 @@ namespace WebAtividadeEntrevista.Controllers
 
             return Json(new { success = false });
         }
+
+        /// <summary>
+        /// Metodo que valida se CPF e valido de acordo com regra de digito verificador
+        /// </summary>
+        /// <param name="cpf"></param>
+        /// <returns>Retorna um boleano</returns>
+        [HttpGet]
+        public ActionResult ValidaCPFDigVeri(string cpf)
+        {
+            
+            bool isValid = _servicesCliente.ValidaCpf(cpf); 
+
+            return Json(isValid, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Metodo que retorna se CPF do cliente ja existe na base
+        /// </summary>
+        /// <param name="cpf"></param>
+        /// <returns>recebe boleano</returns>
+        [HttpGet]
+        public ActionResult ValidaCPFClienteExis(string cpf)
+        {
+            BoCliente bo = new BoCliente();
+            var isValid = !bo.VerificarExistencia(cpf);
+
+            return Json(isValid, JsonRequestBehavior.AllowGet);
+        }
+
+        //TODO: Linkar logicas para verificar na lista
+        /// <summary>
+        /// Valida se CPF sendo cadastrado ja existe na lista de Beneficiarios de sessao
+        /// </summary>
+        /// <param name="cpf"></param>
+        /// <returns>boleano</returns>
+        [HttpGet]
+        public ActionResult ValidaCPFBenefExistTempData(string cpf)
+        {
+
+            List<BeneficiarioCliente> listaBenef = (List<BeneficiarioCliente>)TempData["listaBenef"];
+         
+            if (listaBenef.FirstOrDefault(b => b.CPF == cpf) == null)
+            {
+                return Json(false, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+      
+
+
     }
 }
