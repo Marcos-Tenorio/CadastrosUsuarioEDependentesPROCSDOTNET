@@ -1,4 +1,6 @@
-﻿<form id="formCadastro" method="post">
+﻿@model WebAtividadeEntrevista.Models.ClienteModel
+
+<form id="formCadastro" method="post">
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
@@ -17,7 +19,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="CPF">CPF:</label>
-                <input required="required" type="text" class="form-control" id="CPF" formmethod="get" name="CPF" placeholder="Ex.: 999.999.999-99" maxlength="14">
+                <input required="required" type="text" class="form-control" id="CPF"  formmethod="get" name="CPF" placeholder="Ex.: 999.999.999-99" maxlength="14" onblur="formatCPF(this)">
             </div>
 
             <script>
@@ -25,20 +27,26 @@
                     $("#CPF").on("input", function () {
                         var cpf = $(this).val();
 
-                        // Verifica se o CPF tem 11 dígitos antes de fazer a chamada
                         if (cpf.length === 11) {
                             $.get("/Cliente/Incluir", { cpf: cpf }, function (data) {
                                 if (data.Resultado === "falha") {
-                                    $("#myModal").modal("show"); // Exibir o modal em caso de falha
+                                    $("#myModal").modal("show");
                                 } else {
-                                    // Continuar com outras ações após a validação bem-sucedida
+
                                 }
                             });
                         }
                     });
                 });
-            </script>
-            <script>
+                
+                function formatCPF(input) {
+                    var value = input.value.replace(/\D/g, '');
+                    var formattedValue = value.padStart(11, '0');
+                    var formattedCPF = formattedValue.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+
+                    input.value = formattedCPF;
+                }
+                
                 function mascara_cpf(input) {
 
                     var value = input.value.replace(/\D/g, '');
@@ -79,26 +87,26 @@
                 <label for="CEP">CEP:</label>
                 <input required="required" type="text" class="form-control" id="CEP" name="CEP" placeholder="Ex.: 01011-100" maxlength="9">
             </div>
+           
             <script>
+        function mascara_cep(input) {
 
-                function mascara_cep(input) {
+            var value = input.value.replace(/\D/g, '');
 
-                    var value = input.value.replace(/\D/g, '');
+            if (value.length > 5) {
+                value = value.substring(0, 5) + '-' + value.substring(5, 8);
+            }
 
-                    if (value.length > 5) {
-                        value = value.substring(0, 5) + '-' + value.substring(5, 8);
-                    }
+            input.value = value;
+        }
 
-                    input.value = value;
-                }
+        var cepInput = document.getElementById('CEP');
 
-                var cepInput = document.getElementById('CEP');
+        cepInput.addEventListener('input', function () {
+            mascara_cep(this);
+        });
 
-                cepInput.addEventListener('input', function () {
-                    mascara_cep(this);
-                });
-
-            </script>
+         </script>
         </div>
         <div class="col-md-4">
             <div class="form-group">
@@ -160,13 +168,21 @@
     </div>
 </form>
 
-@{ 
+@{
     List<FI.AtividadeEntrevista.DML.BeneficiarioCliente> listaBenef = new List<FI.AtividadeEntrevista.DML.BeneficiarioCliente>();
+    List<FI.AtividadeEntrevista.DML.BeneficiarioCliente> listaBeneficiarios = new List<FI.AtividadeEntrevista.DML.BeneficiarioCliente>();
 
     TempData["listaBenef"] = listaBenef;
+
+    if(Model != null && Model.ListaBenef != null && Model.ListaBenef.Count > 0)
+    {
+        listaBeneficiarios = Model.ListaBenef;
+        TempData["listaBenef"] = Model.ListaBenef;
+    }
+
 }
 
-<!-- Popup Beneficiarios -->
+<!-- Popup Beneficiarios Inicio -->
 <div class="modal fade" id="myModal">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -179,7 +195,7 @@
                     <form id="formBenef" class="form-group" method="post">
                         <div class="col-sm-4">
                             <label for="CPF">CPF:</label>
-                            <input type="text" class="form-control" id="CPFBenef" name="CPF" placeholder="Ex.: 999.999.999-99" maxlength="14">
+                            <input type="text" class="form-control" id="CPFBenef" name="CPF" placeholder="Ex.: 999.999.999-99" maxlength="14" onblur="formatCPF(this)">
                         </div>
                         <div class="col-sm-6">
                             <label for="Nome">Nome:</label>
@@ -200,7 +216,18 @@
                             </tr>
                         </thead>
                         <tbody>
-                            
+                            @foreach (var item in listaBeneficiarios)
+                            {
+                            <tr>
+                                <td>@item.CPF</td>
+                                <td>@item.Nome</td>
+                                <td align="right">
+                                    <a id="altBenef" class="btn btn-sm btn-primary">Alterar</a>
+                                    <a id="excBenef" class="btn btn-sm btn-primary">Excluir</a>
+                                </td>
+                            </tr>
+                            }
+
                         </tbody>
                     </table>
                 </div>
@@ -212,8 +239,11 @@
         </div>
     </div>
 </div>
+<!-- Popup Beneficiarios Fim -->
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
     $(document).ready(function () {
         $("#incluirBenef").click(function () {
@@ -243,15 +273,31 @@
             });
         });
 
-        $("#altBenef").click(function () {
-            window.alert("VRUM VRUM PAPAPA");
-
-            $("#CPFBenef").val($("td").index(this));
-            $("#NomeBenef").val($("td").index(this));
-        })
-
     });
+    $(document).on("click", "#altBenef", function () {
+        var row = $(this).closest("tr");
+        var cpf = row.find("td:eq(0)").text();
+        var nome = row.find("td:eq(1)").text();
 
+        $("#CPFBenef").val(cpf);
+        $("#NomeBenef").val(nome);
 
+     });
 
+    $(document).on("click", "#excBenef", function () {
+    var row = $(this).closest("tr");
+    var cpf = row.find("td:eq(0)").text();
+
+    $.ajax({
+        url: "@Url.Action("ExcluirBeneficiario", "Cliente")",
+        type: "POST",
+        data: { cpf: cpf },
+        success: function (data) {
+            if (data.success) {
+                row.remove();
+
+            }
+        }
+    });
+});
 </script>

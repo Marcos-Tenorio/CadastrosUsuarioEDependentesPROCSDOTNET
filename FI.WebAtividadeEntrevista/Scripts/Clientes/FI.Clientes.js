@@ -57,3 +57,25 @@ function ModalDialog(titulo, texto) {
     $('body').append(texto);
     $('#' + random).modal('show');
 }
+
+
+   
+$(document).ready(function () {
+    $("#Incluir").click(function () {
+        var dados = $("#NomeBenef").val();
+        var dados = $("#CPFBenef").val();
+        0
+        // Enviar o dado para o controller usando AJAX
+        $.ajax({
+            type: "POST",
+            url: "/BeneficiarioController/ArmazenarBeneficiario",
+            data: { dados: dados },
+            success: function () {
+                alert("Dados armazenados com sucesso!");
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    });
+});

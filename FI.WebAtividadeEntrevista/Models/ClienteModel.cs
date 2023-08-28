@@ -66,11 +66,14 @@ namespace WebAtividadeEntrevista.Models
         /// <summary>
         /// Telefone
         /// </summary>
+        [Required]
         public string Telefone { get; set; }
         
         [Required]
         [RegularExpression(@"^\d{3}\.\d{3}\.\d{3}-\d{2}$", ErrorMessage = "CPF inválido")]
         public string CPF { get; set; }
+
+        public List<BeneficiarioCliente> ListaBenef { get; set; }
 
 
 

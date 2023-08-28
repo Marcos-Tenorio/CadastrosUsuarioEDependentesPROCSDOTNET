@@ -21,7 +21,6 @@ namespace FI.AtividadeEntrevista.DAL
         {
             List<System.Data.SqlClient.SqlParameter> parametros = new List<System.Data.SqlClient.SqlParameter>();
 
-          
                 parametros.Add(new System.Data.SqlClient.SqlParameter("Nome", cliente.Nome));
                 parametros.Add(new System.Data.SqlClient.SqlParameter("Sobrenome", cliente.Sobrenome));
                 parametros.Add(new System.Data.SqlClient.SqlParameter("Nacionalidade", cliente.Nacionalidade));
@@ -40,6 +39,8 @@ namespace FI.AtividadeEntrevista.DAL
                 return ret;
            
         }
+
+       
 
         /// <summary>
         /// Inclui um novo cliente

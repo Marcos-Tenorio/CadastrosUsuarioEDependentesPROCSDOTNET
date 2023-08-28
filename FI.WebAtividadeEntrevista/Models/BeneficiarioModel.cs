@@ -12,20 +12,8 @@ namespace WebAtividadeEntrevista.Models
         /// <summary>
         /// Id
         /// </summary>
-        [Key]
+        
         public int Id { get; set; }
-
-        /// <summary>
-        /// Id do cliente
-        /// </summary>
-        [Key]
-        public int IdCliente { get; set; }
-
-        /// <summary>
-        /// Nome 
-        /// </summary>
-        [Required]
-        public string Nome { get; set; }
 
         /// <summary>
         /// CPF
@@ -34,7 +22,15 @@ namespace WebAtividadeEntrevista.Models
         [RegularExpression(@"^\d{3}\.\d{3}\.\d{3}-\d{2}$", ErrorMessage = "CPF inválido")]
         public string CPF { get; set; }
 
-       
+        /// <summary>
+        /// Nome 
+        /// </summary>
+        [Required]
+        public string Nome { get; set; }
+
+        public int IDCLIENTE { get; set; }
+
+
 
     }
 }

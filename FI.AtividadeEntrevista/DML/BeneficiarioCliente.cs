@@ -15,5 +15,15 @@ namespace FI.AtividadeEntrevista.DML
 
         public string Nome { get; set; }
 
+        public int IDCLIENTE { get; set; }
+
+        
+        public BeneficiarioCliente(int IdCliente)
+        {
+            IDCLIENTE = IdCliente;
+        }
+
+        public BeneficiarioCliente()
+        { }
     }
 }

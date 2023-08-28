@@ -72,3 +72,20 @@ function ModalDialog(titulo, texto) {
     $('body').append(texto);
     $('#' + random).modal('show');
 }
+$(document).on("click", "#excBenef", function () {
+    var row = $(this).closest("tr");
+    var cpf = row.find("td:eq(0)").text();
+
+    $.ajax({
+        url: post;
+        type: "POST",
+        data: {
+            "CPF": $(this).find("#CPFBenef").val(),
+            "Nome": $(this).find("#NomeBenef").val(),},
+        success: function (data) {
+            if (data.success) {
+                row.remove();
+
+            }
+        }
+    });

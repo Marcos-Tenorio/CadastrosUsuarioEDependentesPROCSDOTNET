@@ -18,20 +18,58 @@ namespace WebAtividadeEntrevista.Controllers
         {
             return View();
         }
-
-        public ActionResult Incluir()
+ 
+        [HttpPost]
+        public ActionResult Incluir(BeneficiarioModel beneficiario)
         {
-            return View();
+            Models.BeneficiarioModel model = null;
+
+            model = new BeneficiarioModel()
+            {
+                CPF = beneficiario.CPF,
+                Nome = beneficiario.Nome
+                
+            };
+
+
+            return View(model);
+
+            //return View();
         }
 
+
+
+        /*
+                [HttpPost]
+                public JsonResult Incluir(BeneficiarioModel model)
+                {
+                    BeneficiarioCliente cli = new BeneficiarioCliente();
+                    BoBeneficiarioCliente bo = new BoBeneficiarioCliente();
+                    string cpfBenef = model.CPF;
+                    List<BeneficiarioCliente> listaTempBenef = (List<BeneficiarioCliente>)TempData["ListBenef"];
+
+
+                        model.Id = (int)bo.Incluir(new BeneficiarioCliente()
+                        {
+                            CPF = model.CPF,
+                            Nome = model.Nome,
+                            IDCLIENTE = (int)model.IDCLIENTE,
+
+                        });
+                        return Json($"CPF dos beneficiarios cadastrados com sucesso");
+                    }
+                    else { return Json($"CPF {model.CPF} do beneficiario invalido"); };
+                }
+
+           */
         public ActionResult BeneficiarioModel()
         {
             List<BeneficiarioModel> beneficiarioModelList = new List<BeneficiarioModel>();
             {
                 new BeneficiarioModel
                 {
-                    Nome = "asy",
-                    CPF = "sdas"
+                    Nome = "",
+                    CPF = ""
                 };
 
             };
@@ -43,6 +81,35 @@ namespace WebAtividadeEntrevista.Controllers
         }
 
 
+        /// <summary>
+        /// Metodo para excluir beneficiario de uma lista pelo CPF
+        /// </summary>
+        /// <param name="cpf">CPF presente na linha do beneficiario que foi selecionado no front</param>
+        /// <returns></returns>
+        public JsonResult ExcluirBeneficiario(string cpf)
+        {
+            List<BeneficiarioCliente> listaBenef = new List<BeneficiarioCliente>();
+
+            var beneficiarioParaExcluir = listaBenef.FirstOrDefault(b => b.CPF == cpf);
+
+            if (beneficiarioParaExcluir != null)
+            {
+                listaBenef.Remove(beneficiarioParaExcluir);
+                TempData["listaBenef"] = listaBenef;
+                return Json(new { success = true });
+            }
+
+            return Json(new { success = false });
+        }
+
+        [HttpPost]
+        public ActionResult ArmazenarBeneficiario(string CPFBenef, string NomeBenef) 
+        {            
+            TempData["CPFBenef"] = CPFBenef;
+            TempData["NomeBenef"] = NomeBenef;
+
+            return new EmptyResult();
+        }
 
 
 

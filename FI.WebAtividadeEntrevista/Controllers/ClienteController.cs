@@ -29,9 +29,12 @@ namespace WebAtividadeEntrevista.Controllers
         public JsonResult Incluir(ClienteModel model)
         {
             Cliente cli = new Cliente();
-
             BoCliente bo = new BoCliente();
+            BoBeneficiarioCliente boB = new BoBeneficiarioCliente();
             string cpfCliente = model.CPF;
+            List<string> ss = TempData["CPF"] as List<string>;
+
+            List<BeneficiarioCliente> listaTempBenef = (List<BeneficiarioCliente>)TempData["listaBenef"];
 
             if (!this.ModelState.IsValid)
             {
@@ -42,22 +45,38 @@ namespace WebAtividadeEntrevista.Controllers
                 Response.StatusCode = 400;
                 return Json(string.Join(Environment.NewLine, erros));
             }
-            else if (_servicesCliente.ValidaCpf(cpfCliente))
+            else if (_servicesCliente.ValidaCpf(cpfCliente) && !bo.VerificarExistencia(cpfCliente))
             {
-                model.Id = bo.Incluir(new Cliente()
+                if (!bo.VerificarExistencia(cpfCliente))
                 {
-                    CEP = model.CEP,
-                    Cidade = model.Cidade,
-                    Email = model.Email,
-                    Estado = model.Estado,
-                    Logradouro = model.Logradouro,
-                    Nacionalidade = model.Nacionalidade,
-                    Nome = model.Nome,
-                    Sobrenome = model.Sobrenome,
-                    Telefone = model.Telefone,
-                    CPF = model.CPF
-                });
-                return Json("Cadastro efetuado com sucesso");
+                    model.Id = bo.Incluir(new Cliente()
+                    {
+                        CEP = model.CEP,
+                        Cidade = model.Cidade,
+                        Email = model.Email,
+                        Estado = model.Estado,
+                        Logradouro = model.Logradouro,
+                        Nacionalidade = model.Nacionalidade,
+                        Nome = model.Nome,
+                        Sobrenome = model.Sobrenome,
+                        Telefone = model.Telefone,
+                        CPF = model.CPF
+                    });
+
+                    int idCliente = (int)model.Id;
+
+                    if (listaTempBenef != null && listaTempBenef.Count > 0)
+                    {
+                        foreach (var benef in listaTempBenef)
+                        {
+                            benef.IDCLIENTE = idCliente;
+                            boB.Incluir(benef);
+                        }
+                    }
+
+                    return Json("Cadastro efetuado com sucesso");
+                }
+                else { return Json("CPF ja cadastrado"); };
             }
             else { return Json("CPF invalido"); };
         }
@@ -67,6 +86,8 @@ namespace WebAtividadeEntrevista.Controllers
         {
             string cpfCliente = model.CPF;
             BoCliente bo = new BoCliente();
+            BoBeneficiarioCliente boBenef = new BoBeneficiarioCliente();
+            List<BeneficiarioCliente> listaTempBenef = (List<BeneficiarioCliente>)TempData["listaBenef"];
 
             if (!this.ModelState.IsValid)
             {
@@ -79,6 +100,7 @@ namespace WebAtividadeEntrevista.Controllers
             }
             else if (_servicesCliente.ValidaCpf(cpfCliente))
             {
+
                 bo.Alterar(new Cliente()
                 {
                     Id = model.Id,
@@ -94,6 +116,19 @@ namespace WebAtividadeEntrevista.Controllers
                     CPF = model.CPF
                 });
 
+                int idCliente = (int)model.Id;
+
+                boBenef.Excluir(idCliente);
+
+                if (listaTempBenef != null && listaTempBenef.Count > 0)
+                {
+                    foreach (var benef in listaTempBenef)
+                    {
+                        benef.IDCLIENTE = idCliente;
+                        boBenef.Incluir(benef);
+                    }
+                }
+
                 return Json("Cadastro alterado com sucesso");
             }
             else
@@ -101,16 +136,25 @@ namespace WebAtividadeEntrevista.Controllers
                 return Json("CPF invalido");
             }
         }
+
+        public void IncluirBeneficiario(BeneficiarioCliente benef)
+        {
+            BoBeneficiarioCliente boBenef = new BoBeneficiarioCliente();
+            boBenef.Incluir(benef);
+        }
+
         [HttpGet]
         public ActionResult Alterar(long id)
         {
             BoCliente bo = new BoCliente();
+            BoBeneficiarioCliente benef = new BoBeneficiarioCliente();
             Cliente cliente = bo.Consultar(id);
             Models.ClienteModel model = null;
+            List<BeneficiarioCliente> listaBenef = new List<BeneficiarioCliente>();
+            listaBenef = benef.Consultar(id);
 
             if (cliente != null)
             {
-              
                 model = new ClienteModel()
                 {
                     Id = cliente.Id,
@@ -123,11 +167,12 @@ namespace WebAtividadeEntrevista.Controllers
                     Nome = cliente.Nome,
                     Sobrenome = cliente.Sobrenome,
                     Telefone = cliente.Telefone,
-                    CPF = cliente.CPF
+                    CPF = cliente.CPF,
+                    ListaBenef = listaBenef
                 };
-
-            
             }
+
+            TempData["listaBenef"] = model.ListaBenef;
 
             return View(model);
         }
@@ -157,7 +202,7 @@ namespace WebAtividadeEntrevista.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { Result = "ERROR", Message = ex});
+                return Json(new { Result = "ERROR", Message = ex });
             }
         }
 
@@ -165,17 +210,40 @@ namespace WebAtividadeEntrevista.Controllers
         {
             List<BeneficiarioCliente> listaBenef = (List<BeneficiarioCliente>)TempData["listaBenef"];
 
-            var novoBeneficiario = new BeneficiarioCliente
+            try
             {
-                CPF = cpf,
-                Nome = nome
-            };
+                var novoBeneficiario = new BeneficiarioCliente
+                {
+                    CPF = cpf,
+                    Nome = nome
+                };
 
-            listaBenef.Add(novoBeneficiario);
+                listaBenef.Add(novoBeneficiario);
 
-            TempData["listaBenef"] = listaBenef;
+                TempData["listaBenef"] = listaBenef;
 
-            return Json(new { success = true, cpf = cpf, nome = nome });
+                return Json(new { success = true, cpf = cpf, nome = nome });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Result = "ERROR", Message = ex });
+            }
+
+        }
+        public ActionResult ExcluirBeneficiario(string cpf)
+        {
+            List<BeneficiarioCliente> listaBenef = (List<BeneficiarioCliente>)TempData["listaBenef"];
+
+            var excluirBeneficiario = listaBenef.FirstOrDefault(b => b.CPF == cpf);
+
+            if (excluirBeneficiario != null)
+            {
+                listaBenef.Remove(excluirBeneficiario);
+                TempData["listaBenef"] = listaBenef;
+                return Json(new { success = true });
+            }
+
+            return Json(new { success = false });
         }
     }
 }
