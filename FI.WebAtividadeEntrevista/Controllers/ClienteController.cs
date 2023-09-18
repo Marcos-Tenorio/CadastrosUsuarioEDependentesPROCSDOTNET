@@ -146,6 +146,7 @@ namespace WebAtividadeEntrevista.Controllers
         [HttpGet]
         public ActionResult Alterar(long id)
         {
+            //TODO: Trazer functions da view incluir tb para a view Alterar
             BoCliente bo = new BoCliente();
             BoBeneficiarioCliente benef = new BoBeneficiarioCliente();
             Cliente cliente = bo.Consultar(id);
@@ -169,7 +170,17 @@ namespace WebAtividadeEntrevista.Controllers
                     Telefone = cliente.Telefone,
                     CPF = cliente.CPF,
                     ListaBenef = listaBenef
-                };
+                };              
+                ViewBag.Cidade = model.Cidade;
+                ViewBag.CEP = cliente.CEP;
+                ViewBag.Email = cliente.Email;
+                ViewBag.Estado = cliente.Estado;
+                ViewBag.Logradouro = cliente.Logradouro;
+                ViewBag.Nacionalidade = cliente.Nacionalidade;
+                ViewBag.Nome = cliente.Nome;
+                ViewBag.Sobrenome = cliente.Sobrenome;
+                ViewBag.Telefone = cliente.Telefone;
+                ViewBag.CPF = cliente.CPF;                  
             }
 
             TempData["listaBenef"] = model.ListaBenef;
@@ -178,7 +189,7 @@ namespace WebAtividadeEntrevista.Controllers
         }
 
 
-        
+
         [HttpPost]
         public JsonResult ClienteList(int jtStartIndex = 0, int jtPageSize = 0, string jtSorting = null)
         {
@@ -214,20 +225,43 @@ namespace WebAtividadeEntrevista.Controllers
         /// <returns>cpf e nome do novo usuario</returns>
         public ActionResult AdicionarBeneficiario(string cpf, string nome)
         {
+            //TODO: Trazer CPF do cliente tambem para náo permitir que CPF de algum benficiario seja o mesmo do cliente
 
-            List<BeneficiarioCliente> listaBenef = new List<BeneficiarioCliente>();
+            List<BeneficiarioCliente> listaBenef = (List<BeneficiarioCliente>)TempData["listaBenef"];
+ 
 
             try
             {
-                var novoBeneficiario = new BeneficiarioCliente
+                if (listaBenef != null)
                 {
-                    CPF = cpf,
-                    Nome = nome
-                };
+                    var checExistBenef = listaBenef.FirstOrDefault(b => b.CPF == cpf);
 
-                listaBenef.Add(novoBeneficiario);
-
-                TempData["listaBenef"] = listaBenef;
+                    if (checExistBenef == null)
+                    {
+                        var novoBeneficiario = new BeneficiarioCliente
+                        {
+                            CPF = cpf,
+                            Nome = nome
+                        };
+                        listaBenef.Add(novoBeneficiario);
+                        TempData["listaBenef"] = listaBenef;
+                    }
+                    else
+                    {
+                        TempData["listaBenef"] = listaBenef;
+                        return Json(new { success = false, cpf = cpf, nome = nome });
+                    }
+                }
+                else
+                {
+                    var novoBeneficiario = new BeneficiarioCliente
+                    {
+                        CPF = cpf,
+                        Nome = nome
+                    };
+                    listaBenef.Add(novoBeneficiario);
+                    TempData["listaBenef"] = listaBenef;
+                }
 
                 return Json(new { success = true, cpf = cpf, nome = nome });
             }
@@ -244,15 +278,19 @@ namespace WebAtividadeEntrevista.Controllers
         /// <returns>acao de exclusao</returns>
         public ActionResult ExcluirBeneficiario(string cpf)
         {
-            List<BeneficiarioCliente> listaBenef = (List<BeneficiarioCliente>)TempData["listaBenef"];
-
-            var excluirBeneficiario = listaBenef.FirstOrDefault(b => b.CPF == cpf);
-
-            if (excluirBeneficiario != null && listaBenef.Count() > 0)
+            if (TempData["listaBenef"] != null)
             {
-                listaBenef.Remove(excluirBeneficiario);
-                TempData["listaBenef"] = listaBenef;
-                return Json(new { success = true });
+                List<BeneficiarioCliente> listaBenef = (List<BeneficiarioCliente>)TempData["listaBenef"];
+
+                var excluirBeneficiario = listaBenef.FirstOrDefault(b => b.CPF == cpf);
+
+                if (excluirBeneficiario != null)
+                {
+                    listaBenef.Remove(excluirBeneficiario);
+                    TempData["listaBenef"] = listaBenef;
+
+                    return Json(new { success = true });
+                }
             }
 
             return Json(new { success = false });
@@ -266,8 +304,8 @@ namespace WebAtividadeEntrevista.Controllers
         [HttpGet]
         public ActionResult ValidaCPFDigVeri(string cpf)
         {
-            
-            bool isValid = _servicesCliente.ValidaCpf(cpf); 
+
+            bool isValid = _servicesCliente.ValidaCpf(cpf);
 
             return Json(isValid, JsonRequestBehavior.AllowGet);
         }
@@ -299,7 +337,7 @@ namespace WebAtividadeEntrevista.Controllers
             List<BeneficiarioCliente> listaBenef = (List<BeneficiarioCliente>)TempData["listaBenef"];
 
 
-          
+
             if (listaBenef.FirstOrDefault(b => b.CPF == cpf) == null)
             {
                 return Json(false, JsonRequestBehavior.AllowGet);
@@ -309,8 +347,8 @@ namespace WebAtividadeEntrevista.Controllers
                 return Json(true, JsonRequestBehavior.AllowGet);
             }
         }
-    
-      
+
+
 
 
     }

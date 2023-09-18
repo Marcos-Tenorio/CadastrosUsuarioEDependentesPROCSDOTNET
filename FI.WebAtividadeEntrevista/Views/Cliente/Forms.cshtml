@@ -5,13 +5,13 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="Nome">Nome:</label>
-                <input required="required" type="text" class="form-control" id="Nome" name="Nome" placeholder="Ex.: João" maxlength="50">
+                <input required="required" type="text" class="form-control" id="Nome" value="@ViewBag.Nome" name="Nome" placeholder="Ex.: João" maxlength="50">
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label for="Sobrenome">Sobrenome:</label>
-                <input required="required" type="text" class="form-control" id="Sobrenome" name="Sobrenome" placeholder="Ex.: da Silva" maxlength="255">
+                <input required="required" type="text" class="form-control" id="Sobrenome" value="@ViewBag.Sobrenome" name="Sobrenome" placeholder="Ex.: da Silva" maxlength="255">
             </div>
         </div>
     </div>
@@ -19,7 +19,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="CPF">CPF:</label>
-                <input type="text" class="form-control" id="CPF" name="CPF" placeholder="Ex.: 999.999.999-99" maxlength="11" onblur="formatCPF(this)">
+                <input type="text" class="form-control" id="CPF" value="@ViewBag.CPF" name="CPF" placeholder="Ex.: 999.999.999-99" maxlength="11" onblur="formatCPF(this)">
                 <div id="cpfValidationMessage" style="color: red;"></div>
             </div>
         </div>
@@ -27,7 +27,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="Nacionalidade">Nacionalidade:</label>
-                <input required="required" type="text" class="form-control" id="Nacionalidade" name="Nacionalidade" placeholder="Ex.: brasileira" maxlength="50">
+                <input required="required" type="text" class="form-control" id="Nacionalidade" value="@ViewBag.Nacionalidade" name="Nacionalidade" placeholder="Ex.: brasileira" maxlength="50">
             </div>
         </div>
 
@@ -36,7 +36,7 @@
         <div class="col-md-4">
             <div class="form-group">
                 <label for="CEP">CEP:</label>
-                <input required="required" type="text" class="form-control" id="CEP" name="CEP" placeholder="Ex.: 01011-100" maxlength="8" onblur="formatCEP(this)">
+                <input required="required" type="text" class="form-control" id="CEP" value="@ViewBag.CEP" name="CEP" placeholder="Ex.: 01011-100" maxlength="8" onblur="formatCEP(this)">
             </div>
 
         </div>
@@ -45,15 +45,15 @@
                 <label for="Estado">Estado:</label>
                 <select required="required" id="Estado" class="form-control" name="Estado">
                     <option value="">Selecione</option>
-                    <option value="SP">São Paulo</option>
-                    <option value="PE">Pernambuco</option>
+                    <option value="SP" @(ViewBag.Estado == "SP" ? "selected" : "")>São Paulo</option>
+                    <option value="PE" @(ViewBag.Estado == "PE" ? "selected" : "")>Pernambuco</option>
                 </select>
             </div>
         </div>
         <div class="col-md-4">
             <div class="form-group">
                 <label for="Cidade">Cidade:</label>
-                <input required="required" type="text" class="form-control" id="Cidade" name="Cidade" maxlength="50" placeholder="Ex.: São Paulo">
+                <input required="required" type="text" class="form-control" id="Cidade" value="@ViewBag.Cidade" name="Cidade" maxlength="50" placeholder="Ex.: São Paulo">
             </div>
         </div>
     </div>
@@ -62,7 +62,7 @@
         <div class="col-md-12">
             <div class="form-group">
                 <label for="Logradouro">Logradouro:</label>
-                <input required="required" type="text" class="form-control" id="Logradouro" name="Logradouro" placeholder="Ex.: Rua Boa Vista 253" maxlength="500">
+                <input required="required" type="text" class="form-control" id="Logradouro" value="@ViewBag.Logradouro" name="Logradouro" placeholder="Ex.: Rua Boa Vista 253" maxlength="500">
             </div>
         </div>
     </div>
@@ -71,13 +71,13 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="Email">E-mail:</label>
-                <input required="required" type="text" class="form-control" id="Email" name="Email" placeholder="Ex.: email@email.com" maxlength="2079">
+                <input required="required" type="text" class="form-control" id="Email" value="@ViewBag.Email" name="Email" placeholder="Ex.: email@email.com" maxlength="2079">
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label for="Telefone">Telefone:</label>
-                <input required="required" type="tel" class="form-control" id="Telefone" name="Telefone" placeholder="Ex.: (11) 2020-3030" maxlength="11" onblur="formatTel(this)">
+                <input required="required" type="tel" class="form-control" id="Telefone" value="@ViewBag.Telefone" name="Telefone" placeholder="Ex.: (11) 2020-3030" maxlength="11" onblur="formatTel(this)">
             </div>
         </div>
     </div>
@@ -103,9 +103,11 @@
 @{
     List<FI.AtividadeEntrevista.DML.BeneficiarioCliente> listaBenef = new List<FI.AtividadeEntrevista.DML.BeneficiarioCliente>();
     List<FI.AtividadeEntrevista.DML.BeneficiarioCliente> listaBeneficiarios = new List<FI.AtividadeEntrevista.DML.BeneficiarioCliente>();
+    List<FI.AtividadeEntrevista.DML.Cliente> listaCliente = new List<FI.AtividadeEntrevista.DML.Cliente>();
+
 
     TempData["listaBenef"] = listaBenef;
-
+    
 
     if (Model != null && Model.ListaBenef != null && Model.ListaBenef.Count > 0)
     {
@@ -259,6 +261,7 @@
                         $("#CPFBenef").val("");
                         $("#NomeBenef").val("");
                     }
+                    else { $("#cpfBenefValidationMessage").text("CPF já cadastrado."); }
                 }
             });
 
